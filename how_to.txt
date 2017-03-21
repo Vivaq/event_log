@@ -1,0 +1,11 @@
+Wymagania:
+Django >= 1.10
+python >= 2.7
+biblioteki:
+requests
+json
+Preferowana przegladarka=Firefox
+
+Uruchomienie:
+python 'sciezka'/manage.py runserver
+Otworzenie strony localhost:80/event_log

@@ -1,0 +1,164 @@
+<html>
+	<head>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <style>
+            table {
+                margin-left: 10%;
+                font-family: Ubuntu, serif;
+                border-collapse: collapse;
+                width: 80%;
+            }
+
+            #Log_Attempts{
+                display: {{ display.logattempts }};
+            }
+
+            #Errors{
+                display: {{ display.errors }};
+            }
+
+            #Configuration_Changed{
+                display: {{ display.configurationchanged }};
+            }
+
+            textarea{
+                width: 100%;
+                height: 5%;
+            }
+
+            section{
+                width: 100%;
+                height: 75%;
+            }
+
+            footer{
+                display: none;
+                border-top: double;
+            }
+
+            #filter_text{
+                width: 70%;
+                margin-left: 15%;
+            }
+
+            div{
+                margin-left: 35%;
+                width: 30%;
+            }
+
+            td, th {
+                border: 1px solid cadetblue;
+                text-align: center;
+                padding: 1%;
+            }
+
+            th input {
+                width: 100%;
+                font-weight: bold
+            }
+
+            tr:nth-child(even) {
+                background-color: cadetblue;
+            }
+        </style>
+        <script>
+            function choose_db() {
+                var obj = document.getElementById("ct");
+                var option = obj.options[obj.selectedIndex].text;
+                $("#Log_Attempts").hide();
+                $("#Errors").hide();
+                $("#Configuration_Changed").hide();
+                $("#"+option).show();
+            }
+            function show_filter() {
+                $("#filter").toggle();
+            }
+        </script>
+
+
+    </head>
+	<body>
+
+        <section>
+            <div>
+                <select id="ct" title="choose table" >
+                    <option onclick="choose_db()">Log_Attempts</option>
+                    <option onclick="choose_db()">Errors</option>
+                    <option onclick="choose_db()">Configuration_Changed</option>
+                </select>
+                <input type="button" value="show/hide filter" onclick="show_filter()">
+            </div><br>
+
+            <table id="Log_Attempts">
+                <tr>
+                    {% for i in '....' %}
+                        <th>
+                            <form action="/event_log/" method="post">
+                                {% csrf_token %}
+                                <input type="submit" name="logattempts"
+                                       value="{% cycle 'ID' 'SOURCE' 'SUCCEEDED' 'EVENT_DATE'%}">
+                            </form>
+                        </th>
+                    {% endfor %}
+                </tr>
+                {% for log in logs %}
+                    <tr>
+                        {% for l in log %}
+                            <td>{{ l }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+            <table id="Errors">
+                <tr>
+                    {% for i in '.....' %}
+                        <th>
+                            <form action="/event_log/" method="post">
+                                {% csrf_token %}
+                                <input type="submit" name="errors"
+                                       value="{% cycle 'ID' 'SOURCE' 'WHY' 'DANGER' 'EVENT_DATE'%}">
+                            </form>
+                        </th>
+                    {% endfor %}
+                </tr>
+                {% for error in errors %}
+                    <tr>
+                        {% for e in error %}
+                            <td>{{ e }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+            <table id="Configuration_Changed">
+                <tr>
+                    {% for i in '....' %}
+                        <th>
+                            <form action="/event_log/" method="post">
+                                {% csrf_token %}
+                                <input type="submit" name="configurationchanged"
+                                       value="{% cycle 'ID' 'SOURCE' 'DESCRIPTION' 'EVENT_DATE'%}">
+                            </form>
+                        </th>
+                    {% endfor %}
+                </tr>
+                {% for conf in configurations %}
+                    <tr>
+                        {% for c in conf %}
+                            <td>{{ c }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+        </section>
+        <footer id="filter">
+            <br>
+            <form action="/event_log/" method="post">
+                {% csrf_token %}
+                {{ form }}
+                <p align="center">
+                    <input type="submit" name="option" value="Filter"><input type="submit" name="option" value="Delete">
+                </p>
+            </form>
+        </footer>
+	</body>
+</html>
